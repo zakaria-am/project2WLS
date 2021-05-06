@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 18080:8080
+    php:
+        build:
+            context: ./backend
+        container_name: php
+        depends_on:
+            - api-db
+            - rabbitmq
+        env_file:
+            - ./backend/.env
+        volumes:
+            - ./backend:/app/backend:rw,delegated
+        environment:
+            XDEBUG_CONFIG: "remote_host=docker.for.mac.localhost idekey=IDE_XDEBUG"
+            PHP_IDE_CONFIG: "serverName=docker-server"
+            DATABASE_URL: "pgsql://symfony:symfony@api-db:5432/db_name"
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.nginx
+        container_name: backend
+        depends_on:
+            - php
+        env_file:
+            - ./backend/.env
+        ports:
+            - "8080:80"
+        volumes:
+            - ./backend/public:/app/backend/public:ro
+
+    cache-proxy:
+        build:
+            context: ./backend/
+            dockerfile: ./Dockerfile.varnish
+        container_name: cache-proxy
+        depends_on:
+            - backend
+        volumes:
+            - ./backend/docker/varnish/conf:/etc/varnish:ro
+        ports:
+            - "8081:80"
+
+    api-db:
+        image: postgres:11-alpine
+        container_name: api-db
+        environment:
+            - DB_HOST=postgres
+            - POSTGRES_DB=db_name
+            - POSTGRES_USER=symfony
+            - POSTGRES_PASSWORD=symfony
+        ports:
+            - 15432:5432
+
+    h2-proxy:
+        build:
+            context: ./h2-proxy
+            dockerfile: ./Dockerfile
+        container_name: h2-proxy
+        depends_on:
+            - backend
+            - cache-proxy
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8443:8443"
+
+
+    mailcatcher:
+        restart: always
+        image: dockage/mailcatcher:0.6.5
+        ports:
+            - "1080:1080"
+            - "1025:1025"
+volumes:
+    db-data: {}

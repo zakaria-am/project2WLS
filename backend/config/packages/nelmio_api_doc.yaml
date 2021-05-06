@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: 2WLS App
+            description: Zakaria AMMOURA Mini projet
+            version: 1.0.0
+    areas:
+        path_patterns:
+            - ^/2wls/api
