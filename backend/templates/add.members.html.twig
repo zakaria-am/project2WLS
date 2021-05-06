@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('/css/app.css') }}"  type="text/css">
+    {% endblock %}
+
+    {% block body %}
+
+        <form id="postMemberForm" action="{{ path('api_member_post') }}">
+            <ul class="form-style-1">
+                <li><label for="name">Nom <span class="required">*</span></label>
+                    <input type="text" required id="name" class="field-divided" placeholder="Nom" />
+                    <input type="text" required id="lastName" class="field-divided" placeholder="Prénom" /></li>
+                <li>
+                    <label for="phone">Telephone <span class="required">*</span></label>
+                    <input type="number" maxlength="10" minlength="10" required id="phone" class="field-long" />
+                </li>
+                <li>
+                    <label for="country">Pays <span class="required">*</span></label>
+                    <input required type="text" id="country" class="field-long" />
+                </li>
+                <li>
+                    <label for="dateOfBirth">Date de naissance <span class="required">*</span></label>
+                    <input type="date" date required id="dateOfBirth" class="field-long" />
+                </li>
+                <li>
+                    <label for="sex">Sexe</label>
+                    <select required id="sex" class="field-select">
+                        <option value="homme">Homme</option>
+                        <option value="femme">Femme</option>
+                    </select>
+                </li>
+                <li>
+                    <input type="submit" value="Enregistrer" />
+                </li>
+            </ul>
+        </form>
+
+    {% endblock %}
+
+
+    {% block javascripts %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
+    {% endblock %}
+
+
+
